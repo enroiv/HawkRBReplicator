@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="http://www.tibco.com/pe/EngineTypes" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://xmlns.tibco.com/encodings/mime">
+    <pd:name>BusinessProcesses/ProcessStarters/HawkReplicatorReceiver.process</pd:name>
+    <pd:startName>HTTP Receiver</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="HTTP Receiver">
+        <pd:type>com.tibco.plugin.http.HTTPEventSource</pd:type>
+        <pd:resourceType>httppalette.httpEventSource</pd:resourceType>
+        <pd:x>47</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <outputMode>String</outputMode>
+            <defaultEncoding>ISO8859_1</defaultEncoding>
+            <inputOutputVersion>5.3.0</inputOutputVersion>
+            <newMimeSupport>true</newMimeSupport>
+            <sharedChannel>/SharedResources/Connections/HTTP/HwkHBRep_HTTP_Conn.sharedhttp</sharedChannel>
+            <customField/>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Accept" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Charset" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Accept-Encoding" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Length" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Connection" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>660</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1496615885567</pd:targetNamespace>
+    <pd:activity name="Collector">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>399</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <processName>/BusinessProcesses/RoutedProcesses/Collector.process</processName>
+            <processNameXPath>$Compute-Endpoint/Endpoint/URI</processNameXPath>
+        </config>
+        <pd:inputBindings>
+            <HawkRBRequest>
+                <Transport>
+                    <xsl:for-each select="$ComputeParameters/HawkRBRequest/Transport/TransportParameter">
+                        <TransportParameter>
+                            <xsl:value-of select="."/>
+                        </TransportParameter>
+                    </xsl:for-each>
+                </Transport>
+                <MicroAgents>
+                    <xsl:for-each select="$ComputeParameters/HawkRBRequest/MicroAgents/MicroAgent">
+                        <MicroAgent>
+                            <xsl:value-of select="."/>
+                        </MicroAgent>
+                    </xsl:for-each>
+                </MicroAgents>
+                <Rulebases>
+                    <xsl:for-each select="$HTTP-Receiver/ProcessStarterOutput/ns1:mimeEnvelopeElement/mimePart">
+                        <Rulebase>
+                            <xsl:attribute name="FileName">
+                                <xsl:value-of select="substring-before(substring-after(mimeHeaders/content-disposition, 'filename=&quot;'), '&quot;')"/>
+                            </xsl:attribute>
+                            <FileContent>
+                                <xsl:value-of select="binaryContent"/>
+                            </FileContent>
+                        </Rulebase>
+                    </xsl:for-each>
+                </Rulebases>
+            </HawkRBRequest>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Compute Endpoint">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>151</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element>
+                <xsd:element name="Endpoint">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="URI" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <Endpoint>
+                <xsl:choose>
+                    <xsl:when test="string-length($HTTP-Receiver/ProcessStarterOutput/PostData)=0 or&#xA;not(contains($HTTP-Receiver/ProcessStarterOutput/PostData,'Transport')) or&#xA;not(contains($HTTP-Receiver/ProcessStarterOutput/PostData,'MicroAgent'))">
+                        <URI>
+                            <xsl:value-of select="'/BusinessProcesses/RoutedProcesses/Collector.process'"/>
+                        </URI>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <URI>
+                            <xsl:value-of select="concat('/BusinessProcesses/RoutedProcesses/',$HTTP-Receiver/ProcessStarterOutput/RequestURI,'.process')"/>
+                        </URI>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </Endpoint>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Send HTTP Response">
+        <pd:type>com.tibco.plugin.http.HTTPResponseActivity</pd:type>
+        <pd:resourceType>httppalette.httpWebResponse</pd:resourceType>
+        <pd:x>528</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <closeConnection>true</closeConnection>
+            <eventSource>HTTP Receiver</eventSource>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings>
+            <xsl:choose>
+                <xsl:when test="$Collector/HawkRBResponse">
+                    <xsl:choose>
+                        <xsl:when test="$Collector/HawkRBResponse/ProcessResponse">
+                            <ResponseActivityInput>
+                                <asciiContent>
+                                    <xsl:value-of select="'OK'"/>
+                                </asciiContent>
+                                <Headers>
+                                    <StatusLine>
+                                        <xsl:value-of select="'HTTP/1.1 200 OK'"/>
+                                    </StatusLine>
+                                </Headers>
+                                <ns1:mimeEnvelopeElement>
+                                    <xsl:for-each select="$Collector/HawkRBResponse/ProcessResponse/Rulebases/Rulebase">
+                                        <mimePart>
+                                            <mimeHeaders>
+                                                <content-disposition>
+                                                    <xsl:value-of select="concat('attachment;filename=&quot;',Name,'&quot;')"/>
+                                                </content-disposition>
+                                                <content-type>
+                                                    <xsl:value-of select="'application/xml'"/>
+                                                </content-type>
+                                            </mimeHeaders>
+                                            <binaryContent>
+                                                <xsl:value-of select="Content"/>
+                                            </binaryContent>
+                                        </mimePart>
+                                    </xsl:for-each>
+                                </ns1:mimeEnvelopeElement>
+                            </ResponseActivityInput>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <ResponseActivityInput>
+                                <xsl:if test="$Collector/HawkRBResponse/Error/HTTPResponse">
+                                    <asciiContent>
+                                        <xsl:value-of select="$Collector/HawkRBResponse/Error/HTTPResponse"/>
+                                    </asciiContent>
+                                </xsl:if>
+                                <Headers>
+                                    <StatusLine>
+                                        <xsl:value-of select="'HTTP/1.1 200 OK'"/>
+                                    </StatusLine>
+                                </Headers>
+                            </ResponseActivityInput>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:choose>
+                        <xsl:when test="$_404/HawkRBResponse/ProcessResponse">
+                            <ResponseActivityInput>
+                                <asciiContent>
+                                    <xsl:value-of select="''"/>
+                                </asciiContent>
+                                <Headers>
+                                    <StatusLine>
+                                        <xsl:value-of select="'HTTP/1.1 200 OK'"/>
+                                    </StatusLine>
+                                </Headers>
+                            </ResponseActivityInput>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <ResponseActivityInput>
+                                <asciiContent>
+                                    <xsl:value-of select="$_404/HawkRBResponse/Error/HTTPResponse"/>
+                                </asciiContent>
+                                <Headers>
+                                    <StatusLine>
+                                        <xsl:value-of select="'HTTP/1.1 200 OK'"/>
+                                    </StatusLine>
+                                </Headers>
+                            </ResponseActivityInput>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>27</pd:x>
+        <pd:y>187</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Send Server Error">
+        <pd:type>com.tibco.plugin.http.HTTPResponseActivity</pd:type>
+        <pd:resourceType>httppalette.httpWebResponse</pd:resourceType>
+        <pd:x>657</pd:x>
+        <pd:y>189</pd:y>
+        <config>
+            <closeConnection>true</closeConnection>
+            <eventSource>HTTP Receiver</eventSource>
+            <Headers>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="StatusLine" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Content-Type" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Set-Cookie" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Pragma" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="Location" type="xsd:string" minOccurs="0"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </Headers>
+        </config>
+        <pd:inputBindings>
+            <ResponseActivityInput>
+                <asciiContent>
+                    <xsl:value-of select="concat('&lt;html>&lt;head>&lt;/head>&lt;body>Server error&lt;br>',tib:render-xml($_error/ns:ErrorReport, 0,1),'&lt;/body>&lt;/html>')"/>
+                </asciiContent>
+                <Headers>
+                    <StatusLine>
+                        <xsl:value-of select="'HTTP/1.1 500 Internal Server Error'"/>
+                    </StatusLine>
+                </Headers>
+            </ResponseActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="404">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>402</pd:x>
+        <pd:y>133</pd:y>
+        <config>
+            <processName>/BusinessProcesses/RoutedProcesses/Collector.process</processName>
+        </config>
+        <pd:inputBindings>
+            <HawkRBRequest>
+                <Transport/>
+                <MicroAgents/>
+                <Rulebases/>
+            </HawkRBRequest>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ComputeParameters">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>280</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element>
+                <xsd:element name="HawkRBRequest">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Transport">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="TransportParameter" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element name="MicroAgents">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="MicroAgent" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <HawkRBRequest>
+                <Transport>
+                    <xsl:variable name="varTransport" select="substring-before(substring-after($HTTP-Receiver/ProcessStarterOutput/PostData,'Transport='), '&amp;')"/>
+                    <xsl:variable name="varUETransport" select="tib:base64-to-string($varTransport )"/>
+                    <xsl:variable name="varTransports" select="tib:tokenize($varUETransport, '|')"/>
+                    <xsl:for-each select="$varTransports">
+                        <TransportParameter>
+                            <xsl:value-of select="."/>
+                        </TransportParameter>
+                    </xsl:for-each>
+                </Transport>
+                <MicroAgents>
+                    <xsl:variable name="varMicroAgent" select="substring-after($HTTP-Receiver/ProcessStarterOutput/PostData, 'MicroAgent=')"/>
+                    <xsl:variable name="varUEMicroAgent" select="tib:base64-to-string($varMicroAgent )"/>
+                    <xsl:variable name="varMicroAgents" select="tib:tokenize($varUEMicroAgent, ',')"/>
+                    <xsl:for-each select="$varMicroAgents">
+                        <MicroAgent>
+                            <xsl:value-of select="."/>
+                        </MicroAgent>
+                    </xsl:for-each>
+                </MicroAgents>
+            </HawkRBRequest>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>HTTP Receiver</pd:from>
+        <pd:to>Compute Endpoint</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Collector</pd:from>
+        <pd:to>Send HTTP Response</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Compute Endpoint</pd:from>
+        <pd:to>ComputeParameters</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send HTTP Response</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Send Server Error</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Send Server Error</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Collector</pd:from>
+        <pd:to>404</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>error</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>404</pd:from>
+        <pd:to>Send HTTP Response</pd:to>
+        <pd:lineType>One Bend</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ComputeParameters</pd:from>
+        <pd:to>Collector</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

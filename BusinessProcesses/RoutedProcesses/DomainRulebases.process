@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:bwu="java://com.enro.bwutils.BWUtils" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns="www.tibco.com/plugin/java/JavaMethodActivityInput" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns2="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns1="www.tibco.com/plugin/java/JavaMethodActivityOutput">
+    <pd:name>BusinessProcesses/RoutedProcesses/DomainRulebases.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="HawkRBRequest">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="Transport">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="TransportParameter" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="MicroAgents">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="MicroAgent" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="Rulebases">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Rulebase" minOccurs="0" maxOccurs="unbounded">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:element name="FileContent" type="xsd:base64Binary"/>
+                                        </xsd:sequence>
+                                        <xsd:attribute name="FileName" type="xsd:string" use="required"/>
+                                    </xsd:complexType>
+                                </xsd:element>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>27</pd:startX>
+    <pd:startY>35</pd:startY>
+    <pd:returnBindings>
+        <HawkRBResponse>
+            <ProcessResponse>
+                <Rulebases>
+                    <xsl:for-each select="$ReplaceInTemplate/Rulebases/Rulebase">
+                        <Rulebase>
+                            <Name>
+                                <xsl:value-of select="Name"/>
+                            </Name>
+                            <Content>
+                                <xsl:value-of select="Content"/>
+                            </Content>
+                        </Rulebase>
+                    </xsl:for-each>
+                </Rulebases>
+            </ProcessResponse>
+        </HawkRBResponse>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="HawkRBResponse">
+            <xsd:complexType>
+                <xsd:choice>
+                    <xsd:element name="Error" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="HTTPStatus" type="xsd:int"/>
+                                <xsd:element name="HTTPResponse" type="xsd:string"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="ProcessResponse" minOccurs="0">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="Rulebases">
+                                    <xsd:complexType>
+                                        <xsd:sequence>
+                                            <xsd:element name="Rulebase" minOccurs="0" maxOccurs="unbounded">
+                                                <xsd:complexType>
+                                                    <xsd:sequence>
+                                                        <xsd:element name="Name" type="xsd:string"/>
+                                                        <xsd:element name="Content" type="xsd:base64Binary"/>
+                                                    </xsd:sequence>
+                                                </xsd:complexType>
+                                            </xsd:element>
+                                        </xsd:sequence>
+                                    </xsd:complexType>
+                                </xsd:element>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>452</pd:endX>
+    <pd:endY>35</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1496616017622</pd:targetNamespace>
+    <pd:activity name="InspectDomain">
+        <pd:type>com.tibco.plugin.java.JavaMethodActivity</pd:type>
+        <pd:resourceType>ae.activities.JavaMethodActivity</pd:resourceType>
+        <pd:x>217</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <ConstructDeclaredClass>false</ConstructDeclaredClass>
+            <CacheConstructedClass>false</CacheConstructedClass>
+            <InvokeCleanupMethod>false</InvokeCleanupMethod>
+            <MethodInfo>
+                <classLocation>c:/psyncopate/src/hawk/lib/htool.jar</classLocation>
+                <classPath>/HTool.aliaslib</classPath>
+                <className>com.enro.htool.main.HTool</className>
+                <methodName>process</methodName>
+                <methodReturn>java.lang.String</methodReturn>
+                <methodParameter>[Ljava.lang.String;</methodParameter>
+                <methodParameter>[Ljava.lang.String;</methodParameter>
+            </MethodInfo>
+        </config>
+        <pd:inputBindings>
+            <ns:JavaMethodActivityInput>
+                <com.enro.htool.main.HTool>
+                    <xsl:value-of select="$CreateInstance/ns1:JavaMethodActivityOutput/MethodReturnValue"/>
+                </com.enro.htool.main.HTool>
+                <MethodParameters>
+                    <xsl:for-each select="$Start/HawkRBRequest/MicroAgents/MicroAgent">
+                        <Parameter1>
+                            <xsl:value-of select="."/>
+                        </Parameter1>
+                    </xsl:for-each>
+                    <xsl:for-each select="$Start/HawkRBRequest/Transport/TransportParameter">
+                        <Parameter2>
+                            <xsl:value-of select="."/>
+                        </Parameter2>
+                    </xsl:for-each>
+                </MethodParameters>
+            </ns:JavaMethodActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="CreateInstance">
+        <pd:type>com.tibco.plugin.java.JavaMethodActivity</pd:type>
+        <pd:resourceType>ae.activities.JavaMethodActivity</pd:resourceType>
+        <pd:x>121</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <ConstructDeclaredClass>true</ConstructDeclaredClass>
+            <CacheConstructedClass>false</CacheConstructedClass>
+            <InvokeCleanupMethod>false</InvokeCleanupMethod>
+            <MethodInfo>
+                <classLocation>c:/psyncopate/src/hawk/lib/htool.jar</classLocation>
+                <classPath>/HTool.aliaslib</classPath>
+                <className>com.enro.htool.main.HTool</className>
+                <isConstructor>true</isConstructor>
+            </MethodInfo>
+        </config>
+        <pd:inputBindings>
+            <ns1:JavaMethodActivityInput xmlns:ns1="www.tibco.com/plugin/java/JavaMethodActivityInput"/>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Micro Agents">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>219</pd:x>
+        <pd:y>176</pd:y>
+        <config>
+            <element>
+                <xsd:element name="MicroAgents">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="MicroAgent" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <MicroAgents>
+                <xsl:variable name="varmAgents" select="tib:tokenize($InspectDomain/ns1:JavaMethodActivityOutput/MethodReturnValue, ',')"/>
+                <xsl:for-each select="$varmAgents">
+                    <MicroAgent>
+                        <xsl:value-of select="."/>
+                    </MicroAgent>
+                </xsl:for-each>
+            </MicroAgents>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map MA Details">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>335</pd:x>
+        <pd:y>177</pd:y>
+        <config>
+            <element>
+                <xsd:element name="Details">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Domain" type="xsd:string" minOccurs="0"/>
+                            <xsd:element name="MA" minOccurs="0" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="Deployment" type="xsd:string"/>
+                                        <xsd:element name="Component" type="xsd:string"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <Details>
+                <Domain>
+                    <xsl:value-of select="$_globalVariables/ns2:GlobalVariables/Domain"/>
+                </Domain>
+                <xsl:choose>
+                    <xsl:when test="$_globalVariables/ns2:GlobalVariables/isDebug='true'">
+                        <xsl:for-each select="$Map-Micro-Agents/MicroAgents/MicroAgent">
+                            <MA>
+                                <xsl:variable name="varMA" select="."/>
+                                <xsl:variable name="varParts" select="tib:tokenize($varMA,'.')"/>
+                                <xsl:variable name="varNumParts" select="count($varParts)"/>
+                                <Deployment>
+                                    <xsl:value-of select="$varParts[$varNumParts - 1]"/>
+                                </Deployment>
+                                <Component>
+                                    <xsl:value-of select="$varParts[$varNumParts]"/>
+                                </Component>
+                            </MA>
+                        </xsl:for-each>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:for-each select="$Map-Micro-Agents/MicroAgents/MicroAgent">
+                            <MA>
+                                <xsl:variable name="varMA" select="substring-after(., concat($_globalVariables/ns2:GlobalVariables/Domain,'.'))"/>
+                                <Deployment>
+                                    <xsl:value-of select="substring-before($varMA,'.')"/>
+                                </Deployment>
+                                <Component>
+                                    <xsl:value-of select="substring-after($varMA,'.')"/>
+                                </Component>
+                            </MA>
+                        </xsl:for-each>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </Details>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="ReplaceInTemplate">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>450</pd:x>
+        <pd:y>176</pd:y>
+        <config>
+            <element>
+                <xsd:element name="Rulebases">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Rulebase" minOccurs="0" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="Name" type="xsd:string"/>
+                                        <xsd:element name="Content" type="xsd:base64Binary"/>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <Rulebases>
+                <xsl:for-each select="$Map-MA-Details/Details/MA">
+                    <xsl:variable name="varMA" select="."/>
+                    <xsl:for-each select="$Start/HawkRBRequest/Rulebases/Rulebase">
+                        <xsl:variable name="varTemplate" select="."/>
+                        <Rulebase>
+                            <xsl:variable name="varStrTmplt" select="tib:base64-to-string($varTemplate/FileContent)"/>
+                            <xsl:variable name="varTmpltDom" select="bwu:strReplace($varStrTmplt,'%%TIBCO_DOMAIN%%', $_globalVariables/ns2:GlobalVariables/Domain)"/>
+                            <xsl:variable name="varTmpltDep" select="bwu:strReplace($varTmpltDom,'%%TIBCO_DEPLOYMENT%%', $varMA/Deployment)"/>
+                            <xsl:variable name="varTmpltComp" select="bwu:strReplace($varTmpltDep,'%%TIBCO_COMPONENT_INSTANCE%%', $varMA/Component)"/>
+                            <Name>
+                                <xsl:value-of select="concat($varMA/Deployment,'_',$varMA/Component,'_',$varTemplate/@FileName)"/>
+                            </Name>
+                            <Content>
+                                <xsl:value-of select="tib:string-to-base64($varTmpltComp)"/>
+                            </Content>
+                        </Rulebase>
+                    </xsl:for-each>
+                </xsl:for-each>
+            </Rulebases>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>CreateInstance</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>InspectDomain</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>error</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>otherwise</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>CreateInstance</pd:from>
+        <pd:to>InspectDomain</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>InspectDomain</pd:from>
+        <pd:to>Map Micro Agents</pd:to>
+        <pd:xpathDescription>proceed</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>not(contains($InspectDomain/ns1:JavaMethodActivityOutput/MethodReturnValue,'FATAL'))</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Micro Agents</pd:from>
+        <pd:to>Map MA Details</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map MA Details</pd:from>
+        <pd:to>ReplaceInTemplate</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ReplaceInTemplate</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
