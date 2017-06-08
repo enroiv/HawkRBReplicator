@@ -156,7 +156,7 @@
                     </MicroAgent>
                 </MicroAgents>
                 <TemplatePath>
-                    <xsl:value-of select="if(string-length($Start/root/TemplatesDir)>0) then $Start/root/TemplatesDir else  'C:\psyncopate\src\Hawk\HTool\Templates'"/>
+                    <xsl:value-of select="if(string-length($Start/root/TemplatesDir)>0) then $Start/root/TemplatesDir else  'C:\psyncopate\src\Hawk\Templates'"/>
                 </TemplatePath>
             </HawkInfo>
         </pd:inputBindings>
