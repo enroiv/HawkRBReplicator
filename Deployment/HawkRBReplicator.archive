@@ -8,13 +8,17 @@
         <processArchive name="RBReplicator">
             <resourceType>process.archive.resource</resourceType>
             <authorProperty>psyncopate</authorProperty>
-            <processProperty>/BusinessProcesses/ProcessStarters/HawkReplicatorReceiver.process,/BusinessProcesses/RoutedProcesses/DomainRulebases.process</processProperty>
+            <processProperty>/BusinessProcesses/ProcessStarters/HawkReplicatorReceiver.process</processProperty>
         </processArchive>
         <versionProperty>1.0.0</versionProperty>
         <authorProperty>psyncopate</authorProperty>
         <addServiceSettableGvars>true</addServiceSettableGvars>
         <name>HawkRBReplicator</name>
-        <designer/>
+        <designer>
+            <lockedProperties/>
+            <fixedChildren/>
+            <resourceDescriptions/>
+        </designer>
         <fileLocationProperty>C:\psyncopate\src\ear\BW5\HawkRBReplicator.ear</fileLocationProperty>
     </enterpriseArchive>
 </Repository:repository>

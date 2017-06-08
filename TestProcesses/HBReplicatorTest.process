@@ -122,6 +122,7 @@
                                     </xsd:sequence>
                                 </xsd:complexType>
                             </xsd:element>
+                            <xsd:element name="TemplatePath" type="xsd:string"/>
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:element>
@@ -154,6 +155,9 @@
                         <xsl:value-of select="'COM.TIBCO.ADAPTER.bwengine'"/>
                     </MicroAgent>
                 </MicroAgents>
+                <TemplatePath>
+                    <xsl:value-of select="if(string-length($Start/root/TemplatesDir)>0) then $Start/root/TemplatesDir else  'C:\psyncopate\src\Hawk\HTool\Templates'"/>
+                </TemplatePath>
             </HawkInfo>
         </pd:inputBindings>
     </pd:activity>
@@ -196,7 +200,7 @@
         <pd:inputBindings>
             <ns2:ListFilesActivityConfig>
                 <fileName>
-                    <xsl:value-of select="if(string-length($Start/root/TemplatesDir)>0) then $Start/root/TemplatesDir else  'C:\psyncopate\src\scripts\bash\RulebaseCreator\Templates\*.hrb'"/>
+                    <xsl:value-of select="concat($Map-Data/HawkInfo/TemplatePath,'\*.hrb')"/>
                 </fileName>
             </ns2:ListFilesActivityConfig>
         </pd:inputBindings>
@@ -208,9 +212,10 @@
         <pd:y>1</pd:y>
         <pd:width>177</pd:width>
         <pd:height>140</pd:height>
-        <pd:collapsedWidth>52</pd:collapsedWidth>
-        <pd:collapsedHeight>69</pd:collapsedHeight>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
         <config>
             <pd:groupType>inputLoop</pd:groupType>
             <pd:serializable>false</pd:serializable>
@@ -261,9 +266,10 @@
         <pd:y>1</pd:y>
         <pd:width>126</pd:width>
         <pd:height>140</pd:height>
-        <pd:collapsedWidth>52</pd:collapsedWidth>
-        <pd:collapsedHeight>69</pd:collapsedHeight>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
         <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
         <config>
             <pd:groupType>inputLoop</pd:groupType>
             <pd:serializable>false</pd:serializable>
@@ -301,7 +307,7 @@
             <pd:inputBindings>
                 <ns2:WriteActivityInputBinaryClass>
                     <fileName>
-                        <xsl:value-of select="concat((if(string-length($Start/root/TemplatesDir)>0) then $Start/root/TemplatesDir else 'C:\psyncopate\src\scripts\bash\RulebaseCreator\Templates'),'\ComputedRB\',substring-before(substring-after($currRb/mimePart/mimeHeaders/content-disposition, 'filename=&quot;'), '&quot;'))"/>
+                        <xsl:value-of select="concat($Map-Data/HawkInfo/TemplatePath,'\ComputedRB\',substring-before(substring-after($currRb/mimePart/mimeHeaders/content-disposition, 'filename=&quot;'), '&quot;'))"/>
                     </fileName>
                     <binaryContent>
                         <xsl:value-of select="$currRb/mimePart/binaryContent"/>
