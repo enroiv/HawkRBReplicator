@@ -6,7 +6,8 @@
         <xsd:element name="root">
             <xsd:complexType>
                 <xsd:sequence>
-                    <xsd:element name="TemplatesDir" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="PropsFile" type="xsd:string"/>
+                    <xsd:element name="TemplatesDir" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:complexType>
         </xsd:element>
@@ -15,15 +16,15 @@
     <pd:startY>79</pd:startY>
     <pd:returnBindings/>
     <pd:endName>End</pd:endName>
-    <pd:endX>1022</pd:endX>
-    <pd:endY>77</pd:endY>
+    <pd:endX>972</pd:endX>
+    <pd:endY>78</pd:endY>
     <pd:errorSchemas/>
     <pd:processVariables/>
     <pd:targetNamespace>http://xmlns.example.com/1496619528437</pd:targetNamespace>
     <pd:activity name="Send HTTP Request">
         <pd:type>com.tibco.plugin.http.client.HttpRequestActivity</pd:type>
         <pd:resourceType>httppalette.httpRequest</pd:resourceType>
-        <pd:x>668</pd:x>
+        <pd:x>700</pd:x>
         <pd:y>78</pd:y>
         <config>
             <inputOutputVersion>5.3.0</inputOutputVersion>
@@ -101,7 +102,7 @@
     <pd:activity name="Map Data">
         <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
         <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
-        <pd:x>114</pd:x>
+        <pd:x>186</pd:x>
         <pd:y>79</pd:y>
         <config>
             <element>
@@ -130,26 +131,39 @@
         </config>
         <pd:inputBindings>
             <HawkInfo>
-                <Transport>
-                    <Param>
-                        <xsl:value-of select="'agent_name=bw6-demo-box'"/>
-                    </Param>
-                    <Param>
-                        <xsl:value-of select="'hawk_domain=bw-demo-domain'"/>
-                    </Param>
-                    <Param>
-                        <xsl:value-of select="'hawk_transport=tibrv'"/>
-                    </Param>
-                    <Param>
-                        <xsl:value-of select="'rv_service=7474'"/>
-                    </Param>
-                    <Param>
-                        <xsl:value-of select="'rv_network=;'"/>
-                    </Param>
-                    <Param>
-                        <xsl:value-of select="'rv_daemon=tcp:7474'"/>
-                    </Param>
-                </Transport>
+                <xsl:choose>
+                    <xsl:when test="count($ReadParams/Parameters/Parameter)>0">
+                        <Transport>
+                            <xsl:for-each select="$ReadParams/Parameters/Parameter">
+                                <Param>
+                                    <xsl:value-of select="."/>
+                                </Param>
+                            </xsl:for-each>
+                        </Transport>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <Transport>
+                            <Param>
+                                <xsl:value-of select="'agent_name=bw6-demo-box'"/>
+                            </Param>
+                            <Param>
+                                <xsl:value-of select="'hawk_domain=bw-demo-domain'"/>
+                            </Param>
+                            <Param>
+                                <xsl:value-of select="'hawk_transport=tibrv'"/>
+                            </Param>
+                            <Param>
+                                <xsl:value-of select="'rv_service=7474'"/>
+                            </Param>
+                            <Param>
+                                <xsl:value-of select="'rv_network=;'"/>
+                            </Param>
+                            <Param>
+                                <xsl:value-of select="'rv_daemon=tcp:7474'"/>
+                            </Param>
+                        </Transport>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <MicroAgents>
                     <MicroAgent>
                         <xsl:value-of select="'COM.TIBCO.ADAPTER.bwengine'"/>
@@ -164,7 +178,7 @@
     <pd:activity name="Map Post Data Params">
         <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
         <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
-        <pd:x>223</pd:x>
+        <pd:x>267</pd:x>
         <pd:y>86</pd:y>
         <config>
             <element>
@@ -192,7 +206,7 @@
     <pd:activity name="List Templates">
         <pd:type>com.tibco.plugin.file.ListFilesActivity</pd:type>
         <pd:resourceType>ae.activities.ListFilesActivity</pd:resourceType>
-        <pd:x>333</pd:x>
+        <pd:x>365</pd:x>
         <pd:y>79</pd:y>
         <config>
             <mode>only-files</mode>
@@ -208,7 +222,7 @@
     <pd:group name="Template_grp">
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>406</pd:x>
+        <pd:x>440</pd:x>
         <pd:y>1</pd:y>
         <pd:width>177</pd:width>
         <pd:height>140</pd:height>
@@ -245,7 +259,7 @@
         <pd:activity name="Read RB Template">
             <pd:type>com.tibco.plugin.file.FileReadActivity</pd:type>
             <pd:resourceType>ae.activities.FileReadActivity</pd:resourceType>
-            <pd:x>483</pd:x>
+            <pd:x>515</pd:x>
             <pd:y>65</pd:y>
             <config>
                 <encoding>binary</encoding>
@@ -262,7 +276,7 @@
     <pd:group name="Rulebase_grp">
         <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
         <pd:resourceType>ae.process.group</pd:resourceType>
-        <pd:x>758</pd:x>
+        <pd:x>790</pd:x>
         <pd:y>1</pd:y>
         <pd:width>126</pd:width>
         <pd:height>140</pd:height>
@@ -298,7 +312,7 @@
         <pd:activity name="Write RB">
             <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
             <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
-            <pd:x>822</pd:x>
+            <pd:x>854</pd:x>
             <pd:y>65</pd:y>
             <config>
                 <encoding>binary</encoding>
@@ -316,9 +330,36 @@
             </pd:inputBindings>
         </pd:activity>
     </pd:group>
+    <pd:activity name="ReadParams">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>109</pd:x>
+        <pd:y>80</pd:y>
+        <config>
+            <processName>/BusinessProcesses/SupportProcesses/ReadParams.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ParamFile>
+                <Path>
+                    <xsl:value-of select="$Start/root/PropsFile"/>
+                </Path>
+            </ParamFile>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>1051</pd:x>
+        <pd:y>76</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
     <pd:transition>
         <pd:from>Start</pd:from>
-        <pd:to>Map Data</pd:to>
+        <pd:to>ReadParams</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>
@@ -361,6 +402,20 @@
     <pd:transition>
         <pd:from>Send HTTP Request</pd:from>
         <pd:to>Rulebase_grp</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>ReadParams</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>End</pd:to>
         <pd:lineType>Default</pd:lineType>
         <pd:lineColor>-16777216</pd:lineColor>
         <pd:conditionType>always</pd:conditionType>

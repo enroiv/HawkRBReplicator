@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ruleBase>
+	<version>5.1.0</version>
+	<name><![CDATA[%%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%%-BW-Perf-Monitor]]></name>
+	<schedule></schedule>
+	<author>HTool on host FNGUSWDMSDZ02(10.215.126.24) at 20:10 Mon, Apr 13, 2015</author>
+	<lastModification>HTool on host FNGUSWDMSDZ02(10.215.126.24) at 20:10 Mon, Apr 13, 2015</lastModification>
+	<comment><![CDATA[This rulebase provides the performance statics for the specified BW processes.]]></comment>
+	<rule>
+		<name><![CDATA[COM.TIBCO.ADAPTER.bwengine.%%TIBCO_DOMAIN%%.%%TIBCO_DEPLOYMENT%%.%%TIBCO_COMPONENT%%:GetMemoryUsage():60]]></name>
+		<schedule></schedule>
+		<overRuling>0</overRuling>
+		<dataSource>
+			<microAgentName><![CDATA[COM.TIBCO.ADAPTER.bwengine.%%TIBCO_DOMAIN%%.%%TIBCO_DEPLOYMENT%%.%%TIBCO_COMPONENT%%]]></microAgentName>
+			<methodName>GetMemoryUsage</methodName>
+			<interval>60000</interval>
+		</dataSource>
+		<test>
+			<name><![CDATA[(PercentUsed InRange 90 94)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[PercentUsed]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="90" />
+				<dataObject class="java.lang.Long"  value="94" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertLow(alertMsg=Warning! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW Engine is using  ${PercentUsed}% of available memory.  Total Memory available for the process is ${TotalBytes} bytes. The process is using  ${UsedBytes} bytes, and the free memory in bytes is ${FreeBytes}.)]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertLow" ><![CDATA[Warning! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW Engine is using  ${PercentUsed}% of available memory.  Total Memory available for the process is ${TotalBytes} bytes. The process is using  ${UsedBytes} bytes, and the free memory in bytes is ${FreeBytes}.]]></dataObject>
+				</dataElement>
+				<properties>
+					<property key="Deployment">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_DEPLOYMENT%%]]></dataObject>
+					</property>
+					<property key="ComponentInstance">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_COMPONENT%%]]></dataObject>
+					</property>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(PercentUsed InRange 95 99)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[PercentUsed]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="95" />
+				<dataObject class="java.lang.Long"  value="99" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertMedium(alertMsg=Warning! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW Engine is using  ${PercentUsed}% of available memory.  Total Memory available for the process is ${TotalBytes} bytes. The process is using  ${UsedBytes} bytes, and the free memory in bytes is ${FreeBytes}.)]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertMedium" ><![CDATA[Warning! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW Engine is using  ${PercentUsed}% of available memory.  Total Memory available for the process is ${TotalBytes} bytes. The process is using  ${UsedBytes} bytes, and the free memory in bytes is ${FreeBytes}.]]></dataObject>
+				</dataElement>
+				<properties>
+					<property key="Deployment">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_DEPLOYMENT%%]]></dataObject>
+					</property>
+					<property key="ComponentInstance">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_COMPONENT%%]]></dataObject>
+					</property>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(PercentUsed >= 100)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.GreaterThanOrEqualTo" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[PercentUsed]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="100" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertHigh(alertMsg=WARNING! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW Engine is using  ${PercentUsed}% of available memory.  The process is using  ${UsedBytes} bytes of Memory. This will limit the ability of the BW process!)]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertHigh" ><![CDATA[WARNING! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW Engine is using  ${PercentUsed}% of available memory.  The process is using  ${UsedBytes} bytes of Memory. This will limit the ability of the BW process!]]></dataObject>
+				</dataElement>
+				<properties>
+					<property key="Deployment">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_DEPLOYMENT%%]]></dataObject>
+					</property>
+					<property key="ComponentInstance">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_COMPONENT%%]]></dataObject>
+					</property>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+	</rule>
+	<rule>
+		<name><![CDATA[COM.TIBCO.ADAPTER.bwengine.%%TIBCO_DOMAIN%%.%%TIBCO_DEPLOYMENT%%.%%TIBCO_COMPONENT%%:getStatus():60]]></name>
+		<schedule></schedule>
+		<overRuling>0</overRuling>
+		<dataSource>
+			<microAgentName><![CDATA[COM.TIBCO.ADAPTER.bwengine.%%TIBCO_DOMAIN%%.%%TIBCO_DEPLOYMENT%%.%%TIBCO_COMPONENT%%]]></microAgentName>
+			<methodName>getStatus</methodName>
+			<interval>60000</interval>
+		</dataSource>
+		<test>
+			<name><![CDATA[(New Errors InRange 1 9)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[New Errors]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Integer"  value="1" />
+				<dataObject class="java.lang.Integer"  value="9" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertLow(alertMsg=The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW engine has produced ${New Errors} new errors in the past 60 seconds, for a total of  ${Total Errors} errors . )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertLow" ><![CDATA[The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW engine has produced ${New Errors} new errors in the past 60 seconds, for a total of  ${Total Errors} errors . ]]></dataObject>
+				</dataElement>
+				<properties>
+					<property key="Deployment">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_DEPLOYMENT%%]]></dataObject>
+					</property>
+					<property key="ComponentInstance">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_COMPONENT%%]]></dataObject>
+					</property>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(New Errors InRange 10 24)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[New Errors]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Integer"  value="10" />
+				<dataObject class="java.lang.Integer"  value="24" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertMedium(alertMsg=Warning! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW engine has produced ${New Errors} new errors in the past 60 seconds, for a total of  ${Total Errors} errors. )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertMedium" ><![CDATA[Warning! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW engine has produced ${New Errors} new errors in the past 60 seconds, for a total of  ${Total Errors} errors. ]]></dataObject>
+				</dataElement>
+				<properties>
+					<property key="Deployment">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_DEPLOYMENT%%]]></dataObject>
+					</property>
+					<property key="ComponentInstance">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_COMPONENT%%]]></dataObject>
+					</property>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(New Errors >= 25)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.GreaterThanOrEqualTo" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[New Errors]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Integer"  value="25" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertHigh(alertMsg=WARNING! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW engine has produced ${New Errors} new errors in the past 60 seconds, for a total of  ${Total Errors} errors. )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertHigh" ><![CDATA[WARNING! The %%TIBCO_DEPLOYMENT%%-%%TIBCO_COMPONENT%% BW engine has produced ${New Errors} new errors in the past 60 seconds, for a total of  ${Total Errors} errors. ]]></dataObject>
+				</dataElement>
+				<properties>
+					<property key="Deployment">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_DEPLOYMENT%%]]></dataObject>
+					</property>
+					<property key="ComponentInstance">
+						<dataObject class="java.lang.String" ><![CDATA[%%TIBCO_COMPONENT%%]]></dataObject>
+					</property>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+	</rule>
+	<rule>
+		<name><![CDATA[COM.TIBCO.ADAPTER.%%TIBCO_DOMAIN%%.%%TIBCO_DEPLOYMENT%%.%%TIBCO_COMPONENT%%:GetProcessDefinitions():30]]></name>
+		<schedule></schedule>
+		<overRuling>0</overRuling>
+		<dataSource>
+			<microAgentName><![CDATA[COM.TIBCO.ADAPTER.bwengine.%%TIBCO_DOMAIN%%.%%TIBCO_DEPLOYMENT%%.%%TIBCO_COMPONENT%%]]></microAgentName>
+			<methodName>GetProcessDefinitions</methodName>
+			<interval>30000</interval>
+		</dataSource>
+		<test>
+			<name><![CDATA[(Aborted InRange 1 5)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Aborted]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="1" />
+				<dataObject class="java.lang.Long"  value="5" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertLow(alertMsg=The ${Name} process definition has now aborted ${Aborted} times.)]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertLow" ><![CDATA[The ${Name} process definition has now aborted ${Aborted} times.]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Aborted InRange 6 14)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Aborted]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="6" />
+				<dataObject class="java.lang.Long"  value="14" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertMedium(alertMsg=Warning! The ${Name} process definition has now aborted ${Aborted} times.)]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertMedium" ><![CDATA[Warning! The ${Name} process definition has now aborted ${Aborted} times.]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Aborted >= 15)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.GreaterThanOrEqualTo" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Aborted]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="15" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertHigh(alertMsg=Error! The ${Name} process definition has now aborted over ${Aborted} times. This indicates a severe issue with this process and should be checked.)]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertHigh" ><![CDATA[Error! The ${Name} process definition has now aborted over ${Aborted} times. This indicates a severe issue with this process and should be checked.]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Suspended InRange 1 9)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Suspended]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="1" />
+				<dataObject class="java.lang.Long"  value="9" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertLow(alertMsg=The ${Name} process has ${Suspended} processes  )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertLow" ><![CDATA[The ${Name} process has ${Suspended} processes  ]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Suspended InRange 10 29)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Suspended]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="10" />
+				<dataObject class="java.lang.Long"  value="29" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertMedium(alertMsg= Warning! The ${Name} process now has ${Suspended} processes  )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertMedium" ><![CDATA[ Warning! The ${Name} process now has ${Suspended} processes  ]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Suspended >= 30)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.GreaterThanOrEqualTo" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Suspended]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="30" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertHigh(alertMsg= Warning! The ${Name} process now has ${Suspended} processes. This must be checked. )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertHigh" ><![CDATA[ Warning! The ${Name} process now has ${Suspended} processes. This must be checked. ]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Swapped InRange 1 9)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Swapped]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="1" />
+				<dataObject class="java.lang.Long"  value="9" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertLow(alertMsg=The ${Name} process now has ${Swapped} processes.  )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertLow" ><![CDATA[The ${Name} process now has ${Swapped} processes.  ]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Swapped InRange 10 29)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.InRange" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Swapped]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="10" />
+				<dataObject class="java.lang.Long"  value="29" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertMedium(alertMsg=Warning! The ${Name} process now has ${Swapped} processes.  )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertMedium" ><![CDATA[Warning! The ${Name} process now has ${Swapped} processes.  ]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Swapped >= 30)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.GreaterThanOrEqualTo" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Swapped]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="30" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertHigh(alertMsg=Warning! The ${Name} process now has ${Swapped} processes. The must be checked. )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertHigh" ><![CDATA[Warning! The ${Name} process now has ${Swapped} processes. This must be checked. ]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+		<test>
+			<name><![CDATA[(Checkpointed >= 2)]]></name>
+			<schedule></schedule>
+			<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.GreaterThanOrEqualTo" >
+				<operator class="COM.TIBCO.hawk.config.rbengine.rulebase.operators.RuleData" >
+					<dataObject class="java.lang.String" ><![CDATA[Checkpointed]]></dataObject>
+				</operator>
+				<dataObject class="java.lang.Long"  value="2" />
+			</operator>
+			<consequenceAction>
+				<name><![CDATA[sendAlertMedium(alertMsg=The ${Name} process has more than one check-pointed process. This should be checked. )]]></name>
+				<schedule></schedule>
+				<microAgentName>COM.TIBCO.hawk.microagent.RuleBaseEngine</microAgentName>
+				<methodName>sendAlertMessage</methodName>
+				<dataElement name="message">
+					<dataObject class="COM.TIBCO.hawk.config.rbengine.rulebase.util.AlertMedium" ><![CDATA[The ${Name} process has more than one check-pointed process. This should be checked. ]]></dataObject>
+				</dataElement>
+				<properties>
+				</properties>
+				<performOnceOnly/>
+				<escalationTime>0</escalationTime>
+			</consequenceAction>
+			<trueConditionPolicy>
+				<trueCountThreshold>1</trueCountThreshold>
+			</trueConditionPolicy>
+			<clearOn>
+				<clearOnFirstFalse/>
+			</clearOn>
+		</test>
+	</rule>
+</ruleBase>
